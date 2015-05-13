@@ -53,6 +53,11 @@ for APP in pong minecraft music; do
     is_running $APP
     if [ $? == 0 ]; then
         app=$APP
+
+        if [ $app == "music" ]; then
+            app="sonicpi"
+        fi
+
         break
     fi
 done
@@ -73,8 +78,10 @@ if [ -p $pipe_name ]; then
     # webkit is running
     echo $jscmd > $pipe_name
 else
+    # Pass on event to dbus
+    dbus-send --session --dest="me.kano.$app" --print-reply "/me/kano/$app" "me.kano.$app.Actions.$signal"
     # just propagate keys
-    xdotool key "$key_propagation"
+    # xdotool key "$key_propagation"
 fi
 
 exit $?
